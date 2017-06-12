@@ -1,0 +1,19 @@
+{
+  "name": "joy",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "body-parser": "~1.13.2",
+    "express": "~4.13.1",
+    "mongojs": "~2.4.0",
+    "mongodb": "2.1.16",
+    "connect":"3.6.2"
+  },
+  "main": "app.js",
+  "author": "parmj",
+  "license": "ISC",
+  "description": "Simple insta home page"
+}

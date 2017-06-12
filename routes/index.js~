@@ -1,0 +1,81 @@
+var express = require('express');
+var router = express.Router();
+//for mongodb
+var mongojs = require('mongojs');
+
+//mlab uri
+var uri = 'mongodb://admin:admin@ds161551.mlab.com:61551/joydb';
+
+var coll = ['instaPosts'];
+//connect to mlab 
+var db = mongojs( uri, coll);
+
+
+/* GET home page. */
+router.get('/', function(req, res, next) {
+  	res.render('index', { title: 'Joy' });
+});
+
+
+//GET user page
+router.get('/api/listAllPosts/:id', function(req, res, next) {
+	db.instaPosts.find({}, function(err, docs) {
+		console.log(docs);
+		if(err) {
+	  		console.log("Error");
+	  		res.send({"returnstatus":"error", "errors":err});
+	  	}
+	  	else if(!docs.length){
+	  		console.log("No data found");
+	  		res.send({"returnstatus":"nodata"});
+	  	}
+	  	else{
+	  		res.send(docs);
+	  	}
+	});	
+});
+
+//Modify the post
+router.put("/api/instaPost/:userId",function(req,res){
+	var userId = mongojs.ObjectId(req.params.userId);	
+	console.log("post");
+        var db = new Item();
+        var response = {};
+
+
+
+	  db.instaPosts.findOneAndUpdate({userId: userId}, {
+   	 $set: {
+      hashTags: req.body.hashTags,
+      location: req.body.location
+    }
+  }, {
+    
+   upsert: true
+  }, (err, result) => {
+    if (err) return res.send(err)
+    res.send(result)
+  })	
+        //var user = req.param('user');
+        db.itemId = req.body.itemId;
+        db.itemName = req.body.itemName;
+        db.price = req.body.price;
+        db.category = req.body.category ; 
+        db.itemImageURL = req.body.itemImageURL;
+	var currentDate = new Date();
+	var date = (currentDate.getMonth()+1) +'/'+currentDate.getDate()+'/'+currentDate.getFullYear();
+	
+	db.postDate = date;
+        db.save(function(err){
+        
+            if(err) {
+                response = {"error" : true,"message" : "Error adding data"};
+            } else {
+                response = {"message" : "Data added"};
+            }
+            res.json(response);
+        });
+    });
+
+
+module.exports = router;
