@@ -1,0 +1,154 @@
+f<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="description" content="Display the Items">
+		<title><%= title %></title>
+		<!--[if lt IE 9]
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.js"></script>
+        <![end if]-->
+		<link rel="stylesheet" type="text/css" href="bootstrap3/css/bootstrap.min.css">
+		<link rel="stylesheet" type="text/css" href="bootstrap3/css/bootstrap-theme.min.css">
+		<link rel="stylesheet" type="text/css" href="stylesheets/sticky_footer.css">
+		<link rel="stylesheet" type="text/css" href="stylesheets/dash.css">
+		<link rel="stylesheet" type="text/css" href="stylesheets/home.css">
+
+
+	</head>
+	<body>
+		<div ng-app="userApp" ng-controller="userController">
+			<nav class="navbar navbar-inverse navbar-fixed-top">
+				<div class="container">
+					<div class="navbar-header">
+						<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+							<span class="sr-only">Toggle navigation</span>
+							
+						</button>
+						<label class="brand_label" style="margin-top:10px;">Joy</label>
+					</div>
+			</nav>
+			<div class="container options">
+					<div class="pull-right">
+					</div>	
+			</div>
+			<!-- Modal -->
+			<div id="imgModal" class="modal fade" role="dialog">
+			  	<div class="modal-dialog">
+			    	<!-- Modal content-->
+			    	<div class="modal-content">
+						<div class="modal-body">
+				      		 <img id="imgMod" width="570" height="500" ng-src="images(item.itemImageURL)" frameborder="0"></img>
+				      	</div>
+				      	
+			    	</div>
+			  	</div>
+			</div>
+			<div class="container dash">
+				<section>
+					
+					<table class="table">
+						<tbody>
+							<tr ng-repeat="item in items">
+								<td class="col-md-9">
+									<div>
+										<p class="text-info" >{{item.userName}}</p>
+										<a href="#imgModal" data-toggle="modal" ng-disabled="item.itemImageURL.length === 0" ng-click="images(item.itemImageURL)"><img id="itemImage" ng-src="./{{getImgUrl(item.itemImageURL)}}"></a>
+										<span class ="heart"></span>
+										<label class="bg-info" style="margin-top:10px;">{{item.title}}</label>
+										<ANY ng-repeat="tag in tags[item.userId]">
+											<a href="#">#{{tag}}</label></a> 
+										</ANY>
+										<ANY ng-repeat="comment in comments[item.userId]">
+											<p>{{comment.userId}}: {{comment.comment}}</p> 
+										</ANY>
+									</div>
+									<div class= comments>
+									
+									</div>
+									<br>
+								</td>
+								
+							</tr>
+							
+						</tbody>
+					</table>
+				</section>
+			</div>
+			
+		</div>
+		<footer class="footer">
+		<ul class="footer-nav">
+		<li>Joy © 2017</li>
+		</ul>
+
+		</footer>
+
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
+		<script type="text/javascript" src="bootstrap3/js/bootstrap.min.js"></script>
+		<script type="text/javascript">
+			angular.module('userApp', [])
+	  			.controller('userController', function($scope, $http,  $sce) {
+	  				var url = "";
+					$scope.tags = {};
+					$scope.comments = {};
+	  				function loadPage(){
+	  					$http({
+	                		method: 'get',
+	                		url: '/api/listPosts/parikshithmj'
+	                	}).success(function(response){
+	                		if(response.returnstatus == "error"){
+	                			$scope.errorMsg = response.errors;
+	                		}
+	                		else if(response.returnstatus == "nodata")
+	                		{
+	                			$scope.errorMsg = "No items found in the database";
+	                		}
+	                		else{
+							    console.log(response[0].hashTags+"Get Posts parmj"+JSON.stringify(response[1]));
+	                			$scope.items = response;
+								for(var i=0;i<response.length;i++){
+									$scope.tags[response[i].userId] = response[i].hashTags;
+									$scope.comments[response[i].userId] = response[i].comments;
+								}
+	                		}
+	                	}).error(function(error){
+	                		console.log(error);
+	                	});
+		  			}
+					loadPage();
+
+		  			
+		  			$scope.images = function(imgLink){
+		  				$scope.imgSrc = imgLink.toString().substring(8);
+		  				console.log($scope.imgSrc);
+		  			} 
+			  		$("#imgModal").on('hide.bs.modal', function(){
+						$("#imgMod").attr('src', '');
+					});
+					$("#imgModal").on('show.bs.modal', function(){
+					    $("#imgMod").attr('src', $scope.imgSrc);
+					});
+
+					$("#findItem").on('show.bs.modal', function(){
+					    $('#itemFind').focus()
+					});
+
+					$scope.clearFind = function(){
+						$scope.item_name = "";
+					}
+					$scope.getImgUrl = function(url){
+						return url.toString().substring(8);
+					}
+
+
+					$scope.getItemDetails = function(id){	
+		  				window.location = 'itemDetail?'+id;		
+					}
+					
+		  		});
+		</script>
+	</body>
+</html>
