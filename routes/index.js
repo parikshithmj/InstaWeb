@@ -121,6 +121,7 @@ router.put("/api/unlikePost/:postId",function(req,res){
 	});
 });
 
+//Image file upload API along with its other attributes 
 router.post("/api/uploadPost/",upload.single('pic'),function(req, res,next){
     console.log('file info: ',req.files);
 	
