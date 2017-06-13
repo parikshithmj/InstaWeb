@@ -58,4 +58,66 @@ router.get('/api/listPosts/:userId', function(req, res, next) {
 	}
 });
 
+//GET who has liked the post
+router.get('/api/listLikedUsers/:userId', function(req, res, next) {
+	
+	var userId = req.params.userId;
+	db.instaPosts.find({userId:userId}, function(err, docs) {
+		if(err) {
+	  		console.log("Error");
+	  		res.send({"returnstatus":"error", "errors":err});
+	  	}
+	  	else if(!docs.length){
+	  		console.log("No record with User id found");
+	  		res.send({"returnstatus":"nodata"});
+	  	}
+	  	else{
+			res.send(docs[0].likes);
+
+	  	}
+	});
+});
+	
+
+
+//Modify the post - Add a comment.
+router.put("/api/addComment/:owner",function(req,res){
+    var response = {};
+	var userId = req.query.userId;
+	var comment = req.query.comment;
+	 		
+	db.instaPosts.update({userId:req.params.owner}, { $push: { comments: {userId: userId,comment:comment } }},function(err, items){
+        if (err) return res.send(500, err);
+		res.json({"result":items});
+    
+	});
+});
+
+
+//Modify the post - Like the post.
+router.put("/api/likePost/:owner",function(req,res){
+    var response = {};
+	var userId = req.query.userId;
+	 		
+	db.instaPosts.update({userId:req.params.owner}, { $push: { likes: {userId: userId }}},function(err, items){
+        if (err) return res.send(500, err);
+		res.json({"result":items});
+    
+	});
+});
+
+
+//Modify the post - Like the post.
+router.put("/api/unlikePost/:owner",function(req,res){
+    var response = {};
+	var userId = req.query.userId;
+	 		
+	db.instaPosts.update({userId:req.params.owner}, { $pull: { likes: {userId: userId }}},function(err, items){
+        if (err) return res.send(500, err);
+		res.json({"result":items});
+    
+	});
+});
+
+
 module.exports = router;
