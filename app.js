@@ -2,9 +2,6 @@ var express = require('express');
 var path = require('path');
 var bodyParser = require('body-parser');
 var path = require('path');
-//for uploading images.
-var multer  = require('multer')
-var upload = multer({ dest: './uploads/' })
 
 var app = express();
 

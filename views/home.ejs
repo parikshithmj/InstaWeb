@@ -55,13 +55,14 @@ f<!DOCTYPE html>
 									<div>
 										<p class="text-info" >{{item.userName}}</p>
 										<a href="#imgModal" data-toggle="modal" ng-disabled="item.itemImageURL.length === 0" ng-click="images(item.itemImageURL)"><img id="itemImage" ng-src="./{{getImgUrl(item.itemImageURL)}}"></a>
-										<span class ="heart"></span>
-										<label class="bg-info" style="margin-top:10px;">{{item.title}}</label>
+										<br><a href="" ng-click="displayLikes(item.userId)" class="popup text-info post">{{likeCount[item.userId]}} likes</a><br>
+										<label class="post" style="margin-top:10px;">{{item.title}}</label>
 										<ANY ng-repeat="tag in tags[item.userId]">
 											<a href="#">#{{tag}}</label></a> 
 										</ANY>
+										<div class="post">	
 										<ANY ng-repeat="comment in comments[item.userId]">
-											<p>{{comment.userId}}: {{comment.comment}}</p> 
+											<span class="bg-info">{{comment.userId}}:</span> {{comment.comment}}</br> 	 
 										</ANY>
 									</div>
 									<div class= comments>
@@ -94,6 +95,13 @@ f<!DOCTYPE html>
 	  				var url = "";
 					$scope.tags = {};
 					$scope.comments = {};
+					$scope.likeCount={};		
+					$scope.likedUsers ="";	
+					//to do
+					$scope.displayLikes = function (userId){		
+		 			// Implement this.		
+								
+		 			}
 	  				function loadPage(){
 	  					$http({
 	                		method: 'get',
@@ -112,6 +120,7 @@ f<!DOCTYPE html>
 								for(var i=0;i<response.length;i++){
 									$scope.tags[response[i].userId] = response[i].hashTags;
 									$scope.comments[response[i].userId] = response[i].comments;
+									$scope.likeCount[response[i].userId] = response[i].likes.length;		
 								}
 	                		}
 	                	}).error(function(error){
